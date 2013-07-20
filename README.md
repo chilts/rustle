@@ -1,7 +1,8 @@
 # Rustle #
 
 Rustle is a stats aggregation library which can use a number of backends for storing a fixed-size database. It is
-similar in design to RRD and Whisper but uses Redis, Files, Memory or any number of other backends.
+similar in design to RRD and Whisper but uses Redis, Files, Memory or any number of other backends (currently only
+Redis is implemented).
 
 Each of these backends can stream an entire fixed-size database hence can be written to disk, over the network
 or indeed to anything in Node which is a ```writeStream``` that can accept a ```.pipe()``` from a ```readStream```.
