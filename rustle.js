@@ -61,6 +61,9 @@ function Sum(opts) {
     // save the redis client
     self.client    = opts.client;
 
+    // save some generated things
+    self.setName = [ self.domain, self.category, self.name ].join(':');
+
     // return this
     return self;
 }
@@ -99,13 +102,12 @@ Sum.prototype.inc = function(timestamp, callback) {
     timestamp = Math.floor(timestamp / 1000);
     var thisPeriod = timestamp - ( timestamp % self.period );
 
-    var periodKey = [ self.domain, self.category, self.name, thisPeriod ].join(':');
-    var setName = [ self.domain, self.category, self.name ].join(':');
+    var periodKey = [ self.setName, thisPeriod ].join(':');
 
     // finally, hit the client with this stuff
     self.client
         .multi()
-        .zadd(setName, thisPeriod, periodKey)
+        .zadd(self.setName, thisPeriod, periodKey)
         .incr(periodKey)
         .exec(function(err, results) {
             callback(err, results);
@@ -122,8 +124,7 @@ Sum.prototype.keys = function(callback) {
     }
 
     // zrange cssminifier:hits:homepage 0 -1
-    var setName = [ self.domain, self.category, self.name ].join(':');
-    this.client.zrange(setName, 0, -1, function(err, keys) {
+    this.client.zrange(self.setName, 0, -1, function(err, keys) {
         if (err) return callback(err);
         keys.forEach(function(key, i) {
             var bits = key.split(':');
@@ -142,8 +143,7 @@ Sum.prototype.values = function(callback) {
     }
 
     // zrange cssminifier:hits:homepage 0 -1
-    var setName = [ self.domain, self.category, self.name ].join(':');
-    this.client.sort(setName, 'by', 'scores', 'get', '#', 'get', '*', function(err, values) {
+    this.client.sort(self.setName, 'by', 'scores', 'get', '#', 'get', '*', function(err, values) {
         if (err) return callback(err);
         var vals = [];
         var key;
