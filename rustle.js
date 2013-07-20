@@ -116,7 +116,10 @@ Sum.prototype.inc = function(timestamp, callback) {
 Sum.prototype.keys = function(callback) {
     var self = this;
 
-    // callback = callback || function(){};
+    // make sure we have a callback
+    if ( typeof callback !== 'function' ) {
+        throw new Error("Provide a callback");
+    }
 
     // zrange cssminifier:hits:homepage 0 -1
     var setName = [ self.domain, self.category, self.name ].join(':');
@@ -133,7 +136,10 @@ Sum.prototype.keys = function(callback) {
 Sum.prototype.values = function(callback) {
     var self = this;
 
-    // callback = callback || function(){};
+    // make sure we have a callback
+    if ( typeof callback !== 'function' ) {
+        throw new Error("Provide a callback");
+    }
 
     // zrange cssminifier:hits:homepage 0 -1
     var setName = [ self.domain, self.category, self.name ].join(':');
