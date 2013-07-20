@@ -1,0 +1,7 @@
+{
+    "name" : "rustle",
+    "version" : "0.1.0",
+    "description" : "Library to write aggregated time-based stats to Redis (and other backends).",
+
+    "main" : "rustle.js"
+}
