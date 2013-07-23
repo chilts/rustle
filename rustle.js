@@ -155,8 +155,8 @@ Sum.prototype.values = function(callback) {
             if ( key ) {
                 var bits = key.split(':');
                 vals.push({
-                    ts   : bits[3],
-                    val  : v
+                    ts   : bits[3],   // the epoch
+                    val  : +v         // convert to int
                 });
                 key = undefined;
             }
