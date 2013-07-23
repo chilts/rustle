@@ -98,6 +98,10 @@ Sum.prototype.inc = function(timestamp, callback) {
         timestamp = Date.now();
     }
 
+    if ( typeof callback == 'undefined' ) {
+        callback = function(){};
+    }
+
     // ok, firstly, round down the timestamp so it is on the previous period boundary
     timestamp = Math.floor(timestamp / 1000);
     var thisPeriod = timestamp - ( timestamp % self.period );
