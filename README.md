@@ -4,9 +4,6 @@ Rustle is a stats aggregation library which can use a number of backends for sto
 similar in design to RRD and Whisper but uses Redis, Files, Memory or any number of other backends (currently only
 Redis is implemented).
 
-Each of these backends can stream an entire fixed-size database hence can be written to disk, over the network
-or indeed to anything in Node which is a ```writeStream``` that can accept a ```.pipe()``` from a ```readStream```.
-
 ## Example ##
 
 Imagine we wanted to keep a count of the number of hits on our homepage every minute and retain all stats for one
@@ -14,7 +11,7 @@ year. We'd set up a stat such as the following:
 
 ```
 var redis = require('redis');
-var rustle = require('./rustle.js');
+var rustle = require('rustle');
 
 var client = redis.createClient();
 
@@ -29,9 +26,11 @@ var homepageHits = rustle({
     retention    : 365 * 24 * 60 * 60, // one year
     aggregation  : 'sum',              // average, sum, last, max, min
 });
+```
 
-To increment the number of hits, just call ```hit```:
+To increment the number of hits:
 
+```
 homepageHits.inc(function(err) {
    // ...
 });
@@ -72,6 +71,9 @@ homepageHits.values(opts, function(err, periods) {
 ```
 
 ## ToDo ##
+
+Each of these backends can stream an entire fixed-size database hence can be written to disk, over the network
+or indeed to anything in Node which is a ```writeStream``` that can accept a ```.pipe()``` from a ```readStream```.
 
 Other commands such as the ability to get all the values between two time periods along with a periodLength to allow
 for more aggregation.
