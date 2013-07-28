@@ -8,6 +8,30 @@
 var util = require('util');
 
 // ----------------------------------------------------------------------------
+// simple helper functions
+
+function toEpoch(d) {
+    console.log('toEpoch(): = ' + d);
+
+    if ( d instanceof Date ) {
+        console.log('date');
+        return Math.floor(d.valueOf() / 1000);
+    }
+
+    if ( typeof d === 'string' ) {
+        console.log('string');
+        return Math.floor((Date.parse(d)).valueOf() / 1000);
+    }
+
+    if ( typeof d === 'number' ) {
+        console.log('number');
+        return Math.floor((new Date(+(d + '000'))).valueOf() / 1000);
+    }
+
+    throw new Error("Unknown format for converting to Epoch : " + typeof d);
+}
+
+// ----------------------------------------------------------------------------
 
 function create(opts) {
     // check we have a client
@@ -132,7 +156,7 @@ Sum.prototype.keys = function(callback) {
         if (err) return callback(err);
         keys.forEach(function(key, i) {
             var bits = key.split(':');
-            keys[i] = bits[3];
+            keys[i] = +bits[3];
         });
         callback(null, keys);
     });
@@ -155,8 +179,8 @@ Sum.prototype.values = function(callback) {
             if ( key ) {
                 var bits = key.split(':');
                 vals.push({
-                    ts   : bits[3],   // the epoch
-                    val  : +v         // convert to int
+                    ts   : +bits[3],   // the epoch
+                    val  : +v          // convert to int
                 });
                 key = undefined;
             }
@@ -164,6 +188,118 @@ Sum.prototype.values = function(callback) {
                 key = v;
             }
         });
+        callback(null, vals);
+    });
+};
+
+Sum.prototype.range = function(opts, callback) {
+    var self = this;
+
+    // make sure we have a callback
+    if ( typeof callback !== 'function' ) {
+        throw new Error("Provide a callback");
+    }
+
+    console.log(opts);
+
+    // figure out limits
+    if ( opts.from ) {
+        opts.from = toEpoch(opts.from);
+    }
+    if ( opts.to ) {
+        opts.to = toEpoch(opts.to);
+    }
+
+    console.log(opts);
+
+    self.values(function(err, vals) {
+        if ( err ) {
+            return callback(err);
+        }
+
+        // if we have nothing, short circuit the rest of this fn
+        if ( !vals.length ) {
+            return callback(null, vals);
+        }
+
+        // if we don't have either limit, set them to be the ends
+        if ( !opts.from ) {
+            opts.from = vals[0].ts;
+        }
+        if ( !opts.to ) {
+            opts.to = vals[vals.length-1].ts;
+        }
+
+        // turn the vals into a lookup table
+        var lut = {};
+        vals.forEach(function(v) {
+            lut[v.ts] = v.val;
+        });
+
+        // loops through from the start to the end, step period,
+        // and copy values across or set to zero if needed
+        var range = [];
+        for ( var ts = opts.from; ts <= opts.to; ts += self.period ) {
+            console.log('ts=' + ts);
+            if ( lut[ts] ) {
+                range.push({ ts : ts, val : lut[ts] });
+            }
+            else {
+                range.push({
+                    ts  : ts,
+                    val : 0,
+                });
+            }
+        }
+
+        callback(null, range);
+    });
+};
+
+Sum.prototype.aggregate = function(opts, callback) {
+    var self = this;
+
+    // firstly, check that this period is a multiple of self.period();
+    // ToDo.
+
+    self.range(opts, function(err, range) {
+        if (err) return callback(error);
+
+        // if we have nothing, then just return nothing
+        if ( range.length === 0 ) {
+            return callback(null, range);
+        }
+
+        // figure out the period for this first value
+        var vals = [];
+        var total = 0;
+        var currentPeriod;
+        range.forEach(function(v) {
+            // get thisPeriod
+            thisPeriod = v.ts - ( v.ts % opts.period );
+
+            // set the currentPeriod if not already set
+            currentPeriod = currentPeriod || thisPeriod;
+
+            // if this is the same as we've already seen
+            if ( thisPeriod === currentPeriod ) {
+                total += v.val;
+            }
+            else {
+                // this is now a different period, so save the last one
+                vals.push({ ts : currentPeriod, val : total });
+
+                // save the new currentPeriod
+                currentPeriod = v.ts;
+
+                // reset the total
+                total = v.val;
+            }
+        });
+
+        // save this last period
+        vals.push({ ts : currentPeriod, val : total });
+
         callback(null, vals);
     });
 };
