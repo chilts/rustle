@@ -72,11 +72,8 @@ homepageHits.values(opts, function(err, periods) {
 
 ## ToDo ##
 
-Each of these backends can stream an entire fixed-size database hence can be written to disk, over the network
-or indeed to anything in Node which is a ```writeStream``` that can accept a ```.pipe()``` from a ```readStream```.
-
-Other commands such as the ability to get all the values between two time periods along with a periodLength to allow
-for more aggregation.
+* ability to stream values to disk
+* other aggregations, such as avg, min, max
 
 ## Author ##
 
