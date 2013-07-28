@@ -1,11 +1,13 @@
 // ----------------------------------------------------------------------------
 //
+// rustle.js - Write and read aggregated time-based stats to Redis.
 //
-//
+// Copyright (c) 2013 Andrew Chilton <andychilton@gmail.com>.
+// All rights reserved.
 //
 // ----------------------------------------------------------------------------
 
-var util = require('util');
+// no requires
 
 // ----------------------------------------------------------------------------
 // simple helper functions
@@ -210,8 +212,7 @@ Sum.prototype.range = function(opts, callback) {
         opts.to = toEpoch(opts.to);
     }
 
-    console.log(opts);
-
+    // get all of the values, then narrow it down
     self.values(function(err, vals) {
         if ( err ) {
             return callback(err);
@@ -259,7 +260,7 @@ Sum.prototype.range = function(opts, callback) {
 Sum.prototype.aggregate = function(opts, callback) {
     var self = this;
 
-    // firstly, check that this period is a multiple of self.period();
+    // Firstly, check that this period is a multiple of self.period();
     // ToDo.
 
     self.range(opts, function(err, range) {
