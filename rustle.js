@@ -13,20 +13,15 @@
 // simple helper functions
 
 function toEpoch(d) {
-    console.log('toEpoch(): = ' + d);
-
     if ( d instanceof Date ) {
-        console.log('date');
         return Math.floor(d.valueOf() / 1000);
     }
 
     if ( typeof d === 'string' ) {
-        console.log('string');
         return Math.floor((Date.parse(d)).valueOf() / 1000);
     }
 
     if ( typeof d === 'number' ) {
-        console.log('number');
         return Math.floor((new Date(+(d + '000'))).valueOf() / 1000);
     }
 
@@ -202,8 +197,6 @@ Sum.prototype.range = function(opts, callback) {
         throw new Error("Provide a callback");
     }
 
-    console.log(opts);
-
     // figure out limits
     if ( opts.from ) {
         opts.from = toEpoch(opts.from);
@@ -241,7 +234,6 @@ Sum.prototype.range = function(opts, callback) {
         // and copy values across or set to zero if needed
         var range = [];
         for ( var ts = opts.from; ts <= opts.to; ts += self.period ) {
-            console.log('ts=' + ts);
             if ( lut[ts] ) {
                 range.push({ ts : ts, val : lut[ts] });
             }
