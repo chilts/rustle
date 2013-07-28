@@ -45,10 +45,28 @@ homepageHits.keys(function(err, keys) {
 });
 ```
 
-If you'd like to know get all the periods and their valies:
+If you'd like to get all the periods and their values:
 
 ```
 homepageHits.values(function(err, periods) {
+   // ...
+});
+```
+
+If you'd like to get a subrange of values:
+
+```
+var opts = { from : 1374554520, to : 1374555120 };
+homepageHits.values(opts, function(err, periods) {
+   // ...
+});
+```
+
+If you'd like to get a aggregate a range of values into larger periods (e.g. 5 mins):
+
+```
+var opts = { from : 1374554520, to : 1374555120, period : 300 };
+homepageHits.values(opts, function(err, periods) {
    // ...
 });
 ```
