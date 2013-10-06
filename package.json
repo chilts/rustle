@@ -1,6 +1,6 @@
 {
     "name" : "rustle",
-    "version" : "0.3.0",
+    "version" : "0.3.1",
     "description" : "Write and read aggregated time-based stats to Redis.",
 
     "main" : "rustle.js",
