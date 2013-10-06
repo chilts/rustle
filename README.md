@@ -23,7 +23,6 @@ var homepageHits = rustle({
     category     : 'hits',             // 
     name         : 'homepage',         // 
     period       : 60,                 // one minute
-    retention    : 365 * 24 * 60 * 60, // one year
     aggregation  : 'sum',              // average, sum, last, max, min
 });
 ```

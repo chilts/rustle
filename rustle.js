@@ -39,11 +39,6 @@ function create(opts) {
         throw new Error("rustle: Provide a valid period");
     }
 
-    // check we have a valid retention
-    if ( typeof opts.retention !== 'number' ) {
-        throw new Error("rustle: Provide a valid period");
-    }
-
     // now create the correct class for this aggregation type
     if ( opts.aggregation === 'sum' ) {
         return new Sum(opts);
